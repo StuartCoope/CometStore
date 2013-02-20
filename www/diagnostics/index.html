@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>CometStore diagnostics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">CometStore</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="index.html">Diagnostics</a></li>
+              <li><a href="benchmark.html">Benchmark</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h1>Cometstore Diagnostics</h1>
+        <p>Cometstore Diagnostics, a suite of benchmarking and diagnostic tools to test and monitor capacity</p>
+        <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="span4">
+          <h2>Environment info</h2>
+         <ul id="environmentInfo">
+
+         </ul>
+        </div>
+        <div class="span4">
+          <h2>Realtime Stats</h2>
+          <ul id="realtimeStats">
+
+          </ul>
+       </div>
+        <div class="span4">
+          <h2>Some Graph</h2>
+          <p>A graph goes here, you can click realtime stats to see them on a graph</p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+      </div>
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2012</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+      var performanceRequestTimeout;
+      var serverURL = 'http://linode.stuartcoope.com:8001';
+
+      $(document).ready(function(){
+
+        
+        ///diagnostics/getEnvironmentInfo
+
+        getEnvironmentInfo();
+
+        getPerformanceInfo();
+
+
+      });
+
+      getPerformanceInfo = function(){
+        $.ajax({
+          url: serverURL + '/diagnostics/getPerformanceInfo'
+        }).done(function(data){
+          var response = JSON.parse(data);
+          console.log(response);
+
+          var uptime = new Date(response.data.uptime * 1000);
+          var uptimeString = uptime.getHours() + ":" + uptime.getMinutes() + ":" + uptime.getSeconds();
+
+          $('#realtimeStats').html('');
+          $('#realtimeStats').append('<li>Events Per Minute: ' + response.data.eventsPerMinute + '</li>')
+             .append('<li>Memory Usage: ' + response.data.memoryUsage + '</li>')
+             .append('<li>Objects Per Minute: ' + response.data.objectsPerMinute + '</li>')
+             .append('<li>Stored Object Count: ' + response.data.storedObjectCount + '</li>')
+             .append('<li>Uptime: ' + uptimeString + '</li>');
+
+
+        }).fail(function(){
+          console.log("Connection issue");
+        });
+
+        performanceRequestTimeout = setTimeout(getPerformanceInfo, 60000);
+      };
+
+      getEnvironmentInfo = function(){
+        $.ajax({
+          url: serverURL + '/diagnostics/getEnvironmentInfo'
+        }).done(function(data){
+          var response = JSON.parse(data);
+          console.log(response);
+
+          $('#environmentInfo').html('');
+          $('#environmentInfo').append('<li>PID: ' + response.data.pid + '</li>')
+            .append('<li>Process Title: ' + response.data.processTitle + '</li>')
+            .append('<li>Architecture: ' + response.data.architecture + '</li>')
+            .append('<li>Platform: ' + response.data.platform + '</li>')
+            .append('<li>Working Directory: ' + response.data.workingDirectory + '</li>');
+        }).fail(function(){
+          console.log("Connection issue");
+        });
+      };
+
+    </script>
+  </body>
+</html>
