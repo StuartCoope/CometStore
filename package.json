@@ -1,0 +1,13 @@
+{
+  "name": "CometStore",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "start": "node app/server/app.js"
+  },
+  "dependencies": {
+    "express": "3.x",
+    "jade": "*",
+    "socket.io": "*"
+  }
+}
