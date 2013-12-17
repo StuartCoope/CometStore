@@ -1,8 +1,33 @@
+<style>
+	button{
+		padding: 50px;
+		float: left;
+		margin-left: 28%;
+		margin-top: 10%;
+	}
+
+</style>
+
+<script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io.connect('http://localhost');
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
+  socket.on('ping', function (data) {
+    $('#ping').effect("shake");
   });
+
+  socket.on('pong', function(data) {
+  	$('#pong').effect("shake");
+  });
+
+  
+  $(document).ready(function(){
+  	$('button').click(function(e){
+  		socket.emit(e.target.id);
+  	});
+  });
+
 </script>
+<button id="ping">Ping</button>
+<button id="pong">Pong</button>

@@ -35,23 +35,29 @@ http.createServer(app).listen(app.get('port'), function(){
 
 */
 
-var app = require('express')()
-  , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+var express = require('express'), 
+    app = express(),
+    path = require('path'),
+    server = require('http').createServer(app),
+    io = require('socket.io').listen(server);
 
 server.listen(3003);
 
 
-app.get('/', function (req, res) {
-  res.sendfile('../public/index.html');
-});
+//app.get('/', function (req, res) {
+//  res.sendfile('../public/index.html');
+//});
 
-
-//app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  
+  socket.on('ping', function (data) {
+    socket.broadcast.emit('ping', {});
   });
+
+  socket.on('pong', function (data) {
+    socket.broadcast.emit('pong', {});
+  });
+
 });
